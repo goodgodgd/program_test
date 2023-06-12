@@ -1,0 +1,6 @@
+solution
+submitted
+__pycache__
+*.csv
+*.xlsx
+.idea
