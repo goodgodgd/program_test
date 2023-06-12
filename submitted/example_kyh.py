@@ -1,4 +1,3 @@
-# 20174303 김용호
 import numpy as np
 
 

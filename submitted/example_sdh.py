@@ -1,4 +1,3 @@
-#20184341 송대헌
 import numpy as np
 # MINUS: line space
 
