@@ -1,18 +1,20 @@
 import importlib
 from glob import glob
-
 import numpy as np
 import pandas as pd
 
+import config as cfg
 
-SOLUTION_MOD = 'solution.solution_example'
-DATA_MOD = 'solution.data_example'
+'''
+You MUST set SOLUTION_MOD and DATA_MOD according to the test
+'''
+# TODO: pass input data as 'Input' class instance instead of tuples
 
 
 def run_test():
-    solution_mod = importlib.import_module(SOLUTION_MOD)
-    test_data = importlib.import_module(DATA_MOD).TEST_DATA
-    module_files = glob('submitted/*.py')
+    solution_mod = importlib.import_module(cfg.SOLUTION_MOD)
+    test_data = importlib.import_module(cfg.DATA_MOD).TEST_DATA
+    module_files = glob(cfg.SUBMIT_PACK + '/*.py')
     module_list = [mod.strip('./').strip('.py').replace('\\', '.') for mod in module_files]
     print('## submitted module list:', module_list)
     # module_list = module_list[:2]
@@ -61,10 +63,18 @@ def eval_one_problem(solution_mod, submitted_mod, test_case, user_name, test_id)
         except ValueError as ve:
             print(f'Solution raised value error:', ve)
             exceptional_input = True
+        except AssertionError as ae:
+            print(f'Solution raised assertion error:', ae)
+            exceptional_input = True
 
         try:
             subm_rslt = executer(subm_func, one_input)
         except ValueError as ve:
+            if exceptional_input:
+                result['pass'] += 1
+                result['correct'] += 1
+            continue
+        except AssertionError as ae:
             if exceptional_input:
                 result['pass'] += 1
                 result['correct'] += 1
@@ -74,6 +84,7 @@ def eval_one_problem(solution_mod, submitted_mod, test_case, user_name, test_id)
             continue
 
         result['pass'] += 1
+        # print(f'## [compare] {test_case.name}: \n\tcorr:{corr_rslt}\n\tsubm:{subm_rslt})')
         if compare_results(corr_rslt, subm_rslt):
             result['correct'] += 1
     return result
